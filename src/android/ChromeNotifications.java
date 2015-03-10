@@ -8,7 +8,6 @@ import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaResourceApi;
-import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,7 +15,6 @@ import org.json.JSONObject;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.NotificationManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -24,14 +22,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.IntentCompat;
 import android.text.Html;
 import android.util.Log;
 
 import java.io.InputStream;
 import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
 
 public class ChromeNotifications extends CordovaPlugin {
     private static final String LOG_TAG = "ChromeNotifications";
@@ -40,60 +35,50 @@ public class ChromeNotifications extends CordovaPlugin {
     private static final String NOTIFICATION_CLICKED_ACTION = INTENT_PREFIX + "Click";
     private static final String NOTIFICATION_CLOSED_ACTION = INTENT_PREFIX + "Close";
     private static final String NOTIFICATION_BUTTON_CLICKED_ACTION = INTENT_PREFIX + "ButtonClick";
+    private static final String DATA_NOTIFICATION_ID = "NotificationId";
+    private static final String DATA_BUTTON_INDEX = "ButtonIndex";
 
-    private static ChromeNotifications pluginInstance;
-    private static List<EventInfo> pendingEvents = new ArrayList<EventInfo>();
     private NotificationManager notificationManager;
-    private CallbackContext messageChannel;
+    private static BackgroundEventHandler<ChromeNotifications> eventHandler;
 
-
-    private static class EventInfo {
-        public String action;
-        public String notificationId;
-        public int buttonIndex;
-
-        public EventInfo(String action, String notificationId, int buttonIndex) {
-            this.action = action;
-            this.notificationId = notificationId;
-            this.buttonIndex = buttonIndex;
+    public static BackgroundEventHandler<ChromeNotifications> getEventHandler() {
+        if (eventHandler == null) {
+            eventHandler = createEventHandler();
         }
+        return eventHandler;
     }
 
-    public static void handleNotificationAction(Context context, Intent intent) {
-        String[] strings = intent.getAction().split("\\|", 3);
-        int buttonIndex = strings.length >= 3 ? Integer.parseInt(strings[2]) : -1;
+    private static BackgroundEventHandler<ChromeNotifications> createEventHandler() {
 
-        if (pluginInstance != null && pluginInstance.messageChannel != null) {
-            Log.w(LOG_TAG, "Firing notification to already running webview");
-            pluginInstance.sendNotificationMessage(strings[0], strings[1], buttonIndex);
-        } else {
-            pendingEvents.add(new EventInfo(strings[0], strings[1], buttonIndex));
-            if (pluginInstance == null) {
-                Intent activityIntent = IntentCompat.makeMainActivity((ComponentName)intent.getParcelableExtra(MAIN_ACTIVITY_LABEL));
-                activityIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_FROM_BACKGROUND);
-                activityIntent.putExtra(MAIN_ACTIVITY_LABEL, MAIN_ACTIVITY_LABEL);
-                context.startActivity(activityIntent);
+        return new BackgroundEventHandler<ChromeNotifications>() {
+
+            @Override
+            public BackgroundEventInfo mapBroadcast(Context context, Intent intent) {
+                String[] strings = intent.getAction().split("\\|", 3);
+                int buttonIndex = strings.length >= 3 ? Integer.parseInt(strings[2]) : -1;
+
+                BackgroundEventInfo event = new BackgroundEventInfo(strings[0]);
+                event.getData().putString(DATA_NOTIFICATION_ID, strings[1]);
+                event.getData().putInt(DATA_BUTTON_INDEX, buttonIndex);
+
+                return event;
             }
-        }
+
+            @Override
+            public void mapEventToMessage(BackgroundEventInfo event, JSONObject message) throws JSONException {
+                message.put("action", event.action.substring(INTENT_PREFIX.length()));
+                message.put("id", event.getData().getString(DATA_NOTIFICATION_ID));
+                if (NOTIFICATION_BUTTON_CLICKED_ACTION.equals(event.action)) {
+                    message.put("buttonIndex", event.getData().getInt(DATA_BUTTON_INDEX));
+                }
+            }
+        };
     }
 
     @Override
     public void pluginInitialize() {
-        if (pluginInstance == null && cordova.getActivity().getIntent().hasExtra(MAIN_ACTIVITY_LABEL)) {
-            cordova.getActivity().moveTaskToBack(true);
-        }
-        pluginInstance = this;
+        getEventHandler().pluginInitialize(this);
         notificationManager = (NotificationManager) cordova.getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-    }
-
-    @Override
-    public void onReset() {
-        messageChannel = null;
-    }
-
-    @Override
-    public void onDestroy() {
-        messageChannel = null;
     }
 
     @Override
@@ -107,30 +92,13 @@ public class ChromeNotifications extends CordovaPlugin {
         } else if ("clear".equals(action)) {
             clear(args, callbackContext);
             return true;
-        } else if ("messageChannel".equals(action)) {
-            messageChannel = callbackContext;
-            for (EventInfo event : pendingEvents) {
-                sendNotificationMessage(event.action, event.notificationId, event.buttonIndex);
-            }
-            pendingEvents.clear();
+        }
+
+        if (getEventHandler().pluginExecute(this, action, args, callbackContext)) {
             return true;
         }
-        return false;
-    }
 
-    private void sendNotificationMessage(String action, String notificationId, int buttonIndex) {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("action", action.substring(INTENT_PREFIX.length()));
-            obj.put("id", notificationId);
-            if (NOTIFICATION_BUTTON_CLICKED_ACTION.equals(action)) {
-                obj.put("buttonIndex", buttonIndex);
-            }
-        } catch (JSONException e) {
-        }
-        PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, obj);
-        pluginResult.setKeepCallback(true);
-        messageChannel.sendPluginResult(pluginResult);
+        return false;
     }
 
     private PendingIntent getExistingNotification(String notificationId) {
