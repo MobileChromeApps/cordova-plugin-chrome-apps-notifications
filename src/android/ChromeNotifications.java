@@ -31,7 +31,6 @@ import java.util.Iterator;
 public class ChromeNotifications extends CordovaPlugin {
     private static final String LOG_TAG = "ChromeNotifications";
     private static final String INTENT_PREFIX = "ChromeNotifications.";
-    private static final String MAIN_ACTIVITY_LABEL = INTENT_PREFIX + "MainActivity";
     private static final String NOTIFICATION_CLICKED_ACTION = INTENT_PREFIX + "Click";
     private static final String NOTIFICATION_CLOSED_ACTION = INTENT_PREFIX + "Close";
     private static final String NOTIFICATION_BUTTON_CLICKED_ACTION = INTENT_PREFIX + "ButtonClick";
@@ -136,7 +135,7 @@ public class ChromeNotifications extends CordovaPlugin {
             fullAction += "|" + buttonIndex;
         }
         intent.setAction(fullAction);
-        intent.putExtra(MAIN_ACTIVITY_LABEL, cordova.getActivity().getIntent().getComponent());
+        getEventHandler().makeBackgroundEventIntent(intent);
         return PendingIntent.getBroadcast(cordova.getActivity(), 0, intent, flags);
     }
 
