@@ -12,6 +12,9 @@ The API reference is [here](http://developer.chrome.com/apps/notifications.html)
 
 # Release Notes
 
+## 1.1.1 (Mar 17, 2015)
+* Remove version constraint on backgroundapp dependency due to plugman bug CB-8696
+
 ## 1.1.0 (Mar 17, 2015)
 * Use `org.chromium.backgroundapp` for background events
 
