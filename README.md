@@ -12,6 +12,9 @@ The API reference is [here](http://developer.chrome.com/apps/notifications.html)
 
 # Release Notes
 
+## 1.1.0 (Mar 17, 2015)
+* Use `org.chromium.backgroundapp` for background events
+
 ## 1.0.7 (Jan 27, 2015)
 * More fully stub out chrome.notifications on iOS (fixes #485)
 * Fix javascript validation when updating notifications (fixes #224)
