@@ -53,7 +53,7 @@ chrome.notifications.onButtonClicked.addListener(function(notificationId, button
 });
 
 
-registerManualTests('chrome.notifications', function(rootEl, addButton) {
+exports.defineManualTests = function(rootEl, addButton) {
   addButton('Basic Notification', function() {
     createNotification({
       type:'basic',
@@ -174,4 +174,4 @@ registerManualTests('chrome.notifications', function(rootEl, addButton) {
     var expectedFireTime = Date.now() + 3000;
     chrome.alarms.create(NOTIFICATION_ALARM_NAME, { when:expectedFireTime });
   });
-});
+};
