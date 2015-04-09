@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/* global afterEach */
-/* global beforeEach */
-/* global describe */
-/* global jasmine */
-/* global logger */
-
 var NOTIFICATION_ALARM_NAME = 'NOTIFICATION_ALARM1';
 var numIds = 0;
 
@@ -184,6 +178,9 @@ exports.defineManualTests = function(rootEl, addButton) {
 
 exports.defineAutoTests = function() {
   'use strict';
+
+  require('cordova-plugin-chrome-apps-test-framework.jasmine_helpers').addJasmineHelpers();
+
   var testTimeout = 2000;
 
   function clearAllNotifications(callback) {
