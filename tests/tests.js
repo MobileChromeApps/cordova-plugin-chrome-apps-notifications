@@ -17,41 +17,45 @@ function createNotification(options, callback) {
   });
 }
 
-console.log('Notifications test registered for alarms');
+// As this file is run at app startup, wait for deviceready before
+// using any plugin APIs
+document.addEventListener("deviceready", function() {
 
-chrome.alarms.onAlarm.addListener(function(alarm) {
-  if (alarm.name === NOTIFICATION_ALARM_NAME) {
-    console.log("Received alarm: " + alarm.name);
-    createNotification({
-      type:'basic',
-      title:'Alarm notification',
-    });
-  }
+  console.log('Notifications test registered for alarms');
+
+  chrome.alarms.onAlarm.addListener(function(alarm) {
+    if (alarm.name === NOTIFICATION_ALARM_NAME) {
+      console.log("Received alarm: " + alarm.name);
+      createNotification({
+        type:'basic',
+        title:'Alarm notification',
+      });
+    }
+  });
+
+  chrome.notifications.onClosed.addListener(function(notificationId, byUser) {
+    console.log('onClosed fired. notificationId = ' + notificationId + ', byUser = ' + byUser);
+  });
+
+  chrome.notifications.onClicked.addListener(function(notificationId) {
+    console.log('onClicked fired. notificationId = ' + notificationId);
+    chrome.notifications.clear(notificationId, function(wasCleared) {});
+    console.log('Showing window.');
+    var wnd = chrome.app.window.getAll()[0];
+    if (wnd) {
+      wnd.show();
+    } else {
+      console.log('Creating Ui Window & showing');
+      createUiWindow(function(appWnd) {
+        // Todo: figure out how to navigate to notifications manual test page.
+      });
+    }
+  });
+
+  chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex) {
+    console.log('onButtonClicked fired. notificationId = ' + notificationId + ', buttonIndex = ' + buttonIndex);
+  });
 });
-
-chrome.notifications.onClosed.addListener(function(notificationId, byUser) {
-  logger('onClosed fired. notificationId = ' + notificationId + ', byUser = ' + byUser);
-});
-
-chrome.notifications.onClicked.addListener(function(notificationId) {
-  logger('onClicked fired. notificationId = ' + notificationId);
-  chrome.notifications.clear(notificationId, function(wasCleared) {});
-  logger('Showing window.');
-  var wnd = chrome.app.window.getAll()[0];
-  if (wnd) {
-    wnd.show();
-  } else {
-    logger('Creating Ui Window & showing');
-    createUiWindow(function(appWnd) {
-      // Todo: figure out how to navigate to notifications manual test page.
-    });
-  }
-});
-
-chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex) {
-  logger('onButtonClicked fired. notificationId = ' + notificationId + ', buttonIndex = ' + buttonIndex);
-});
-
 
 exports.defineManualTests = function(rootEl, addButton) {
   addButton('Basic Notification', function() {
