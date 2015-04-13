@@ -46,7 +46,9 @@ document.addEventListener("deviceready", function() {
       wnd.show();
     } else {
       console.log('Creating Ui Window & showing');
-      createUiWindow(function(appWnd) {
+      var helper = require('cordova-plugin-chrome-apps-test-framework.app_helpers');
+
+      helper.createUiWindow(function(appWnd) {
         // Todo: figure out how to navigate to notifications manual test page.
       });
     }
