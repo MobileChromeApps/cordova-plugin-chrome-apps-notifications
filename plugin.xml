@@ -16,12 +16,12 @@
   <repo>https://github.com/MobileChromeApps/mobile-chrome-apps.git</repo>
   <issue>https://github.com/MobileChromeApps/mobile-chrome-apps/issues</issue>
 
-  <dependency id="org.chromium.common" />
-  <dependency id="org.chromium.runtime" />
-  <dependency id="org.chromium.storage" />
+  <dependency id="cordova-plugin-chrome-apps-common" />
+  <dependency id="cordova-plugin-chrome-apps-runtime" />
+  <dependency id="cordova-plugin-chrome-apps-storage" />
 
   <platform name="android">
-    <dependency id="org.chromium.backgroundapp" />
+    <dependency id="cordova-plugin-background-app" />
     <framework src="com.android.support:support-v4:+" />
 
     <js-module src="notifications.js" name="notifications">
