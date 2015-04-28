@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var Event = require('org.chromium.common.events');
-var storage = require('org.chromium.storage.Storage');
+var Event = require('cordova-plugin-chrome-apps-common.events');
+var storage = require('cordova-plugin-chrome-apps-storage.Storage');
 var exec = require('cordova/exec');
 var channel = require('cordova/channel');
-var runtime = require('org.chromium.runtime.runtime');
-var helpers = require('org.chromium.common.helpers');
+var runtime = require('cordova-plugin-chrome-apps-runtime.runtime');
+var helpers = require('cordova-plugin-chrome-apps-common.helpers');
 var eventsToFireOnStartUp = [];
 var notifications = null;
 var notificationOptions = null;
