@@ -8,7 +8,7 @@
     id="org.chromium.notifications"
     version="1.1.2-dev">
   <engines>
-    <engine name="cordova" version=">=3.0.0" />
+    <engine name="cordova-android" version=">=4" />
   </engines>
 
   <name>Chrome Apps Notifications API</name>
@@ -16,13 +16,13 @@
   <repo>https://github.com/MobileChromeApps/mobile-chrome-apps.git</repo>
   <issue>https://github.com/MobileChromeApps/mobile-chrome-apps/issues</issue>
 
-  <dependency id="android.support.v4" />
   <dependency id="org.chromium.common" />
   <dependency id="org.chromium.runtime" />
   <dependency id="org.chromium.storage" />
 
   <platform name="android">
     <dependency id="org.chromium.backgroundapp" />
+    <framework src="com.android.support:support-v4:+" />
 
     <js-module src="notifications.js" name="notifications">
       <clobbers target="chrome.notifications" />
