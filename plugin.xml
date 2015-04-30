@@ -16,12 +16,12 @@
   <repo>https://github.com/MobileChromeApps/cordova-plugin-chrome-apps-notifications.git</repo>
   <issue>https://github.com/MobileChromeApps/cordova-plugin-chrome-apps-notifications/issues</issue>
 
-  <dependency id="cordova-plugin-chrome-apps-common" />
-  <dependency id="cordova-plugin-chrome-apps-runtime" />
-  <dependency id="cordova-plugin-chrome-apps-storage" />
+  <dependency id="cordova-plugin-chrome-apps-common@1" />
+  <dependency id="cordova-plugin-chrome-apps-runtime@1" />
+  <dependency id="cordova-plugin-chrome-apps-storage@1" />
 
   <platform name="android">
-    <dependency id="cordova-plugin-background-app" />
+    <dependency id="cordova-plugin-background-app@2" />
     <framework src="com.android.support:support-v4:+" />
 
     <js-module src="notifications.js" name="notifications">
