@@ -12,6 +12,9 @@ The API reference is [here](http://developer.chrome.com/apps/notifications.html)
 
 # Release Notes
 
+## 1.3.0 (June 1, 2015)
+- Allow data: URLs for icons
+
 ## 1.2.0 (April 30, 2015)
 - Renamed plugin to pubilsh to NPM
 - Now using cordova-background-app@2.0.0 for better background processing
