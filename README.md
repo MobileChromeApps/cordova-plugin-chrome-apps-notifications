@@ -12,6 +12,9 @@ The API reference is [here](http://developer.chrome.com/apps/notifications.html)
 
 # Release Notes
 
+## 1.3.1 (July 27, 2015)
+- Allow gopher: in URLs (http://crbug.com/513352)
+
 ## 1.3.0 (June 1, 2015)
 - Allow data: URLs for icons
 
