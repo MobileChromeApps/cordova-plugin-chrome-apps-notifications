@@ -12,12 +12,13 @@ var eventsToFireOnStartUp = [];
 var notifications = null;
 var notificationOptions = null;
 
+var RESOLVE_PATTERN = /^(?:chrome-extension|gopher|data|blob):/;
+
 function resolveUri(uri) {
-    if (uri.indexOf('chrome-extension') === 0 || uri.indexOf('data:image') === 0  || uri.indexOf('blob') === 0) {
+    if (RESOLVE_PATTERN.exec(uri)) {
         return uri;
-    } else {
-        return runtime.getURL(uri);
     }
+    return runtime.getURL(uri);
 }
 
 function removeNotification(notificationId) {
